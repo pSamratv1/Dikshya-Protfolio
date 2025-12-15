@@ -29,9 +29,12 @@ const OverlaySection = () => {
     mm.add("(min-width: 768px)", () => {
       // Position the container off-screen to the right
       gsap.set(contentRef.current, {
-        x: "100%", // Start from the right edge of the container
+        x: "100%",
+        right: 0,
+        position: "fixed",
         autoAlpha: 0,
         display: "block",
+        width: "45%",
       });
 
       const tl = gsap.timeline({
@@ -114,12 +117,11 @@ const OverlaySection = () => {
   return (
     <div
       ref={containerRef}
-      className="top-20 w-full md:w-[50%] h-[85vh] md:h-[100vh] z-10 overflow-hidden"
-      style={{ padding: 0 }}
+      className="fixed inset-x-0 bottom-0 w-full h-[80vh] px-4 md:px-0 md:h-screen  md:right-0 md:top-1/2 md:-translate-y-1/2 z-10 overflow-hidden"
     >
       <div
         ref={contentRef}
-        className="w-full h-full flex flex-col text-white px-6 md:px-16 pt-16 md:pt-24 pb-4 space-y-8 md:space-y-12"
+        className="w-full h-full flex flex-col px-6 md:px-16 pt-12 md:pt-24 pb-4 space-y-8 md:space-y-12"
         style={{
           backgroundColor: "rgb(239 68 68 / 0.9 )", // bg-red-500
         }}
@@ -129,7 +131,7 @@ const OverlaySection = () => {
         </div>
         <div className="divider w-0 h-1 bg-black/70 opacity-0 "></div>
         <div className="flex flex-col space-y-2 md:space-y-4">
-          <div className="heading text-black/80 font-sans font-medium text-lg md:text-2xl opacity-0 mt-2 md:mt-4">
+          <div className="heading text-black/80 font-sans font-medium text-lg md:text-2xl opacity-0  md:mt-4">
             Find Your Niche. Fuel Your Growth.
           </div>
           <p className="description text-black/80 font-sans font-light text-sm md:text-base md:text-black/80 opacity-0">
