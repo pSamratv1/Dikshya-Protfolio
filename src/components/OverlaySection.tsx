@@ -69,11 +69,12 @@ const OverlaySection = () => {
 
     // Mobile animation (below 768px)
     mm.add("(max-width: 767px)", () => {
-      // Hide the container initially and position it off-screen to the bottom
+      // Hide the container initially and position it off-screen to the right
       gsap.set(contentRef.current, {
         x: "100%",
         autoAlpha: 0,
         display: "block",
+        width: "100%",
       });
 
       const tl = gsap.timeline({
@@ -113,17 +114,17 @@ const OverlaySection = () => {
   return (
     <div
       ref={containerRef}
-      className="fixed -right-10 top-1/2 -translate-y-1/2 w-full md:w-[50%] h-[85vh] md:h-[100vh] z-10 overflow-hidden"
-      style={{ padding: "0 20px" }}
+      className="top-20 w-full md:w-[50%] h-[85vh] md:h-[100vh] z-10 overflow-hidden"
+      style={{ padding: 0 }}
     >
       <div
         ref={contentRef}
-        className="w-full h-full  flex flex-col  text-white px-4 md:px-16 pt-16 md:pt-24 pb-4  space-y-8 md:space-y-12 "
+        className="w-full h-full flex flex-col text-white px-6 md:px-16 pt-16 md:pt-24 pb-4 space-y-8 md:space-y-12"
         style={{
           backgroundColor: "rgb(239 68 68 / 0.9 )", // bg-red-500
         }}
       >
-        <div className="title flex text-start font-condensed font-black text-8xl md:text-9xl text-black/70 uppercase tracking-widest subpixel-antialias">
+        <div className="title flex text-start font-condensed font-black text-7xl md:text-9xl text-black/70 uppercase tracking-widest subpixel-antialias">
           Niche That's Click Views
         </div>
         <div className="divider w-0 h-1 bg-black/70 opacity-0 "></div>
