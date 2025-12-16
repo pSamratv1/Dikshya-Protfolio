@@ -1,27 +1,370 @@
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html {
-    font-family: "Inter", sans-serif;
-  }
-  body {
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: "Playfair Display", serif;
+:root {
+  --bg-color: #f9f8f4;
+  --text-primary: #1a1a1a;
+  --text-secondary: #555555;
+  --accent: #b0a285;
 
+  --font-serif: var(--font-serif);
+  --font-sans: var(--font-sans);
+
+  --nav-height: 80px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  padding-top: var(--nav-height);
+}
+
+/* NAVBAR */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--nav-height);
+  background-color: var(--bg-color);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 3rem;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.nav-left {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.nav-link {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: var(--accent);
+}
+
+.logo {
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.nav-right {
+  display: flex;
+  gap: 2rem;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* TYPOGRAPHY */
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: 4.5rem;
+  margin-bottom: 2rem;
+}
+
+h2 {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+p {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+}
+
+.cta-link {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--text-primary);
+  padding-bottom: 4px;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+section {
+  padding: 140px 0;
+}
+
+/* HERO */
+
+/* HERO VIDEO SECTION */
+
+/* Wrapper: Holds everything, fills the screen */
+.hero-video-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+  overflow: hidden; /* Cuts off anything spilling out */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -80px; /* Pulls it up behind the navbar */
+}
+
+/* Background Video: Fixed to cover the area */
+.bg-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures video fills screen without stretching */
+  z-index: 1;
+}
+
+/* Overlay: Darkens video slightly so text pops */
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); /* 30% Dark tint */
+  z-index: 2;
+}
+
+/* The Animated Container */
+.hero-container-animated {
+  position: relative;
+  z-index: 3; /* sits on top of video & overlay */
+  text-align: center;
+  max-width: 800px;
+  padding: 0 2rem;
+  color: #ffffff; /* White text for video */
+
+  /* Animation Setup */
+  opacity: 0; /* Start hidden */
+  transform: translateY(-100vh); /* Start WAY up off-screen */
+  animation: slideDownContainer 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.5s; /* Wait half a second before dropping in */
+}
+
+/* The Animation Keyframes */
+@keyframes slideDownContainer {
+  0% {
+    opacity: 0;
+    transform: translateY(-50vh); /* Start from top */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0); /* Land in center */
+  }
+}
+
+/* Typography Specifics for Video Hero */
+.hero-container-animated h1 {
+  font-size: 4.5rem;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for readability */
+}
+
+.hero-container-animated p {
+  color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+  margin: 0 auto 2rem auto;
+  font-weight: 300;
+  text-align: center;
+}
+
+.eyebrow-hero {
+  display: block;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1.5rem;
+}
+
+/* Special White Button for Video */
+.cta-link-white {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #ffffff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 4px;
+  transition: all 0.3s ease;
+}
+
+.cta-link-white:hover {
+  border-bottom: 1px solid #ffffff;
+  opacity: 0.8;
+}
+
+/* Adjust Navbar to be transparent over video */
+nav {
+  background-color: rgba(
+    249,
+    248,
+    244,
+    0.85
+  ); /* Keep it slightly opaque or make it fully transparent if you prefer */
+  backdrop-filter: blur(10px); /* Frosted glass effect */
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .hero-container-animated h1 {
+    font-size: 2.8rem;
+  }
+  .hero-video-wrapper {
+    margin-top: 0; /* Reset margin on mobile if needed */
+  }
+}
+
+/* ABOUT */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.about-image {
+  height: 600px;
+  overflow: hidden;
+}
+
+.about-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Podcast */
+.podcast {
+  text-align: center;
+  background-color: #f4f2eb;
+}
+.podcast-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* VALUES */
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-top: 3rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding-top: 3rem;
+}
+
+/* CONTACT */
+.contact {
+  text-align: center;
+  background-color: #f4f2eb;
+}
+
+/* FOOTER */
+footer {
+  padding: 3rem 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    height: 60px;
+  }
+
+  .nav-left,
+  .nav-text-item {
+    display: none;
+  }
+
+  section {
+    padding: 80px 0;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .values-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  footer {
+    flex-direction: column;
+    gap: 1.5rem;
   }
 }
