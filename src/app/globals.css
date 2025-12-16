@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,6 +13,15 @@
   --font-sans: var(--font-sans);
 
   --nav-height: 80px;
+  /* --- TIMING CONFIGURATION --- */
+  --delay-video-preview: 2.5s; /* How long we watch video before overlay slides in */
+  --duration-overlay: 1.2s; /* How slow the slide down is */
+  --ease-luxury: cubic-bezier(0.22, 1, 0.36, 1); /* Power3.out equivalent */
+
+  /* Colors */
+  --color-cream: #f9f8f4;
+  --color-text: #1a1a1a;
+  --color-sub: #555555;
 }
 
 * {
@@ -31,63 +41,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  padding-top: var(--nav-height);
-}
-
-/* NAVBAR */
-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: var(--nav-height);
-  background-color: var(--bg-color);
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  padding: 0 3rem;
-  z-index: 1000;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.nav-left {
-  display: flex;
-  gap: 2.5rem;
-}
-
-.nav-link {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-weight: 600;
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.nav-link:hover {
-  color: var(--accent);
-}
-
-.logo {
-  font-size: 1.4rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-  text-decoration: none;
-  color: var(--text-primary);
-}
-
-.nav-right {
-  display: flex;
-  gap: 2rem;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.nav-icon {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
+  /* padding-top: var(--nav-height); */
 }
 
 /* TYPOGRAPHY */
@@ -103,11 +57,13 @@ h3 {
 h1 {
   font-size: 4.5rem;
   margin-bottom: 2rem;
+  font-family: var(--font-serif);
 }
 
 h2 {
   font-size: 3rem;
   margin-bottom: 1.5rem;
+  font-family: var(--font-serif);
 }
 
 p {
@@ -147,163 +103,655 @@ section {
   padding: 140px 0;
 }
 
-/* HERO */
-
-/* HERO VIDEO SECTION */
-
-/* Wrapper: Holds everything, fills the screen */
-.hero-video-wrapper {
+/* WRAPPER */
+.editorial-hero-wrapper {
   position: relative;
   width: 100%;
-  height: 100vh; /* Full viewport height */
-  overflow: hidden; /* Cuts off anything spilling out */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: -80px; /* Pulls it up behind the navbar */
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000; /* Fallback */
 }
 
-/* Background Video: Fixed to cover the area */
+/* -------------------------------------------
+           LAYER 1: THE VIDEO (Background)
+           ------------------------------------------- */
+.video-layer {
+  position: absolute; /* Fixed so it doesn't move */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
 .bg-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1;
+}
+
+/* -------------------------------------------
+           LAYER 2: THE OVERLAY (The Slide Down)
+           ------------------------------------------- */
+.editorial-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures video fills screen without stretching */
-  z-index: 1;
-}
+  z-index: 10;
 
-/* Overlay: Darkens video slightly so text pops */
-.video-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.3); /* 30% Dark tint */
-  z-index: 2;
-}
-
-/* The Animated Container */
-.hero-container-animated {
-  position: relative;
-  z-index: 3; /* sits on top of video & overlay */
-  text-align: center;
-  max-width: 800px;
-  padding: 0 2rem;
-  color: #ffffff; /* White text for video */
+  /* Visuals */
+  background-color: rgba(249, 248, 244, 0.96); /* Cream, 96% Opacity */
+  backdrop-filter: blur(10px); /* Glass effect */
 
   /* Animation Setup */
-  opacity: 0; /* Start hidden */
-  transform: translateY(-100vh); /* Start WAY up off-screen */
-  animation: slideDownContainer 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-delay: 0.5s; /* Wait half a second before dropping in */
+  transform: translateY(-100%); /* Start hidden at top */
+  animation: slideDownOverlay var(--duration-overlay) var(--ease-luxury)
+    forwards;
+  animation-delay: var(--delay-video-preview);
 }
 
-/* The Animation Keyframes */
-@keyframes slideDownContainer {
+/* -------------------------------------------
+           LAYER 3: NAVBAR (Fades in After Overlay)
+           ------------------------------------------- */
+.editorial-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem 3rem;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  /* Initial State */
+  opacity: 0;
+  transform: translateY(-10px);
+
+  /* Animation */
+  animation: fadeUpIn 0.8s var(--ease-luxury) forwards;
+  animation-delay: calc(
+    var(--delay-video-preview) + var(--duration-overlay) - 0.2s
+  );
+}
+
+/* Nav Styling */
+.nav-group {
+  display: flex;
+  gap: 2.5rem;
+}
+.nav-right {
+  justify-content: flex-end;
+}
+
+.nav-link {
+  font-family: "Inter", sans-serif;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 900;
+  transition: opacity 0.3s;
+}
+.nav-link:hover {
+  opacity: 0.6;
+}
+
+.logo {
+  font-family: "Inter", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* -------------------------------------------
+           LAYER 4: HERO CONTENT (Fades in Last)
+           ------------------------------------------- */
+.hero-content {
+  position: relative;
+  z-index: 100;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: black;
+  padding: 0 2rem;
+}
+
+/* Staggered Text Animations */
+.animate-item {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUpIn 1s var(--ease-luxury) forwards;
+}
+
+.animate-item-delay-1 {
+  animation-delay: calc(
+    var(--delay-video-preview) + var(--duration-overlay) + 0.1s
+  );
+}
+.animate-item-delay-2 {
+  animation-delay: calc(
+    var(--delay-video-preview) + var(--duration-overlay) + 0.3s
+  );
+}
+.animate-item-delay-3 {
+  animation-delay: calc(
+    var(--delay-video-preview) + var(--duration-overlay) + 0.5s
+  );
+}
+.animate-item-delay-4 {
+  animation-delay: calc(
+    var(--delay-video-preview) + var(--duration-overlay) + 0.7s
+  );
+}
+
+/* Typography */
+.eyebrow {
+  display: block;
+  font-family: "Inter", sans-serif;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--color-sub);
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 5rem;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-text);
+  margin: 0 0 2rem 0;
+  letter-spacing: -0.03em;
+}
+
+p {
+  font-family: "Inter", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--color-sub);
+  max-width: 550px;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+.cta-btn {
+  display: inline-block;
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-text);
+  padding: 1rem 2.5rem;
+  text-decoration: none;
+  transition: all 0.4s ease;
+}
+
+.cta-btn:hover {
+  background: var(--color-text);
+  color: #fff;
+}
+
+/* -------------------------------------------
+           KEYFRAMES
+           ------------------------------------------- */
+@keyframes slideDownOverlay {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeUpIn {
   0% {
     opacity: 0;
-    transform: translateY(-50vh); /* Start from top */
+    transform: translateY(20px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0); /* Land in center */
+    transform: translateY(0);
   }
 }
 
-/* Typography Specifics for Video Hero */
-.hero-container-animated h1 {
-  font-size: 4.5rem;
-  margin-bottom: 1.5rem;
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for readability */
-}
-
-.hero-container-animated p {
-  color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
-  margin: 0 auto 2rem auto;
-  font-weight: 300;
-  text-align: center;
-}
-
-.eyebrow-hero {
-  display: block;
-  font-family: var(--font-sans);
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 1.5rem;
-}
-
-/* Special White Button for Video */
-.cta-link-white {
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #ffffff;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-  padding-bottom: 4px;
-  transition: all 0.3s ease;
-}
-
-.cta-link-white:hover {
-  border-bottom: 1px solid #ffffff;
-  opacity: 0.8;
-}
-
-/* Adjust Navbar to be transparent over video */
-nav {
-  background-color: rgba(
-    249,
-    248,
-    244,
-    0.85
-  ); /* Keep it slightly opaque or make it fully transparent if you prefer */
-  backdrop-filter: blur(10px); /* Frosted glass effect */
-}
-
-/* Mobile Responsiveness */
+/* -------------------------------------------
+           RESPONSIVE
+           ------------------------------------------- */
 @media (max-width: 768px) {
-  .hero-container-animated h1 {
-    font-size: 2.8rem;
+  .editorial-nav {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: center;
   }
-  .hero-video-wrapper {
-    margin-top: 0; /* Reset margin on mobile if needed */
+  .nav-group {
+    display: none;
+  } /* Hide links on mobile for minimal look */
+  h1 {
+    font-size: 3rem;
+  }
+  p {
+    font-size: 1rem;
+  }
+  .cta-btn {
+    padding: 0.8rem 2rem;
   }
 }
 
 /* ABOUT */
+#about {
+  position: relative;
+  background-color: var(--bg-color); /* Ensures seamless blend */
+  overflow: hidden; /* Prevents animation scrollbars */
+}
+
 .about-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  grid-template-columns: 1fr 1fr; /* 50/50 Split */
+  gap: 6rem; /* Increased gap for luxury "breathing room" */
   align-items: center;
 }
 
-.about-image {
-  height: 600px;
-  overflow: hidden;
+/* --- TEXT COLUMN --- */
+.about-text-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 2rem;
 }
 
-.about-image img {
+.about-text-content-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start; /* Aligns text to bottom */
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Subtle line under header */
+}
+
+/* Reuse your existing .eyebrow but ensure spacing */
+.about-text-content .eyebrow {
+  margin-bottom: 1.5rem;
+}
+
+/* Sharper Headline */
+.about-text-content h2 {
+  font-size: 3.5rem; /* Larger than before */
+  margin-bottom: 2rem;
+  line-height: 1.05;
+  color: var(--text-primary);
+}
+
+/* NEW: Editorial Lead Paragraph */
+.about-lead {
+  font-family: var(--font-serif); /* Serif for the lead feels expensive */
+  font-size: 1.35rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  max-width: 100%;
+  font-weight: 400;
+}
+
+/* Standard Body Paragraph */
+.about-body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.7; /* Looser spacing for readability */
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+}
+
+/* Link refinement */
+.cta-link {
+  align-self: flex-start;
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+.cta-link:hover {
+  opacity: 1;
+}
+
+/* --- IMAGE COLUMN --- */
+.about-image-wrapper {
+  position: relative;
+  width: 100%;
+  /* Force a Portrait Aspect Ratio (3:4) - looks more "Magazine" */
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background-color: #eae8e0; /* Placeholder color while loading */
+}
+
+.about-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  /* Subtle filter to blend with cream background */
+  filter: sepia(10%) contrast(95%);
 }
 
-/* Podcast */
-.podcast {
-  text-align: center;
-  background-color: #f4f2eb;
+/* Subtle Hover Effect: Image slowly zooms in */
+.about-image-wrapper:hover .about-img {
+  transform: scale(1.03);
 }
-.podcast-content {
+
+/* 
+========================
+SCROLL ANIMATIONS (CSS Only)
+======================== 
+*/
+
+/* 
+   Note: To make these trigger *only* when scrolled into view, 
+   you usually need a tiny JS observer. 
+   
+   However, here is the pure CSS animation setup. 
+   If you want them to just happen on load, keep 'animation'.
+   If you add the JS snippet below, these will trigger on scroll.
+*/
+
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(60px); /* Start lower down so the movement is visible */
+  animation: revealUp 1.4s cubic-bezier(0.2, 1, 0.3, 1) forwards; /* 1.4s is slower */
+}
+.cursive {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 4rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--color-text);
+  margin: 0 0 2rem 0;
+  letter-spacing: -0.03em;
+}
+
+/* Staggered delays for the grid items */
+.delay-1 {
+  animation-delay: 0.1s;
+}
+.delay-2 {
+  animation-delay: 0.2s;
+}
+.delay-3 {
+  animation-delay: 0.3s;
+}
+.delay-4 {
+  animation-delay: 0.4s;
+}
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger Delays */
+.delay-1 {
+  animation-delay: 0.2s;
+}
+.delay-2 {
+  animation-delay: 0.4s;
+}
+.delay-3 {
+  animation-delay: 0.6s;
+}
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- RESPONSIVE ADJUSTMENTS --- */
+@media (max-width: 1024px) {
+  .about-grid {
+    gap: 3rem;
+  }
+  .about-text-content h2 {
+    font-size: 2.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-grid {
+    grid-template-columns: 1fr; /* Stack vertically */
+    gap: 3rem;
+  }
+
+  .about-text-content {
+    padding-right: 0;
+    order: 2; /* Text below image on mobile? Or keep 1 for text first */
+    text-align: left; /* Keep left align for editorial feel, or center if preferred */
+  }
+
+  /* Make image smaller on mobile */
+  .about-image-wrapper {
+    aspect-ratio: 4/5;
+    order: 1;
+  }
+
+  .about-lead {
+    font-size: 1.15rem;
+  }
+}
+
+/* 
+========================
+PODCAST SECTION (GRID LAYOUT)
+========================
+*/
+.podcast-section {
+  background-color: var(--bg-color);
+  padding: 120px 0;
+}
+
+/* --- HEADER --- */
+.podcast-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; /* Aligns text to bottom */
+  margin-bottom: 4rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Subtle line under header */
+  padding-bottom: 2rem;
+}
+
+.podcast-header h2 {
+  margin-bottom: 0;
+  font-size: 3.5rem;
+  line-height: 1;
+}
+
+.view-all-link {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.3s;
+}
+
+.view-all-link:hover {
+  opacity: 0.6;
+}
+
+.arrow {
+  font-size: 1.1em;
+  transition: transform 0.3s;
+}
+
+.view-all-link:hover .arrow {
+  transform: translateX(5px);
+}
+
+/* --- GRID --- */
+.episodes-grid {
+  display: grid;
+  /* Creates a responsive grid: 4 cols on big screens, 2 on tablet, 1 on mobile */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2.5rem;
+}
+
+/* --- CARD --- */
+.episode-card {
   display: flex;
   flex-direction: column;
+  group: hover; /* For hover effects */
+}
+
+/* Image */
+.card-image-wrapper {
+  position: relative;
+  width: 80%;
+  aspect-ratio: 1 / 1; /* Perfectly square like reference */
+  border-radius: 8px; /* Softens the corners */
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  background-color: #eae8e0;
+}
+
+.card-image-wrapper img {
+  width: 80%;
+  height: 80%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+  filter: grayscale(10%); /* Slight mute */
+}
+
+/* Play Button Overlay (Optional, appears on hover) */
+.play-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 80%;
+  height: 80%;
+  background: rgba(0, 0, 0, 0.1);
+  display: flex;
   align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.play-icon {
+  font-size: 1.5rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover Effects */
+.episode-card:hover .card-image-wrapper img {
+  transform: scale(1.05); /* Slow zoom */
+  filter: grayscale(0%);
+}
+
+.episode-card:hover .play-overlay {
+  opacity: 1;
+}
+
+/* Content */
+.card-content {
+  text-align: left;
+}
+
+.episode-meta {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent); /* Muted Gold */
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.card-content h3 {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  line-height: 1.1;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.card-content p {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  max-width: 100%; /* Allow full width */
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Limit to 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-link {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .podcast-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .podcast-header h2 {
+    font-size: 2.5rem;
+  }
+
+  .episodes-grid {
+    grid-template-columns: 1fr; /* Stack vertically on mobile */
+    gap: 3rem;
+  }
 }
 
 /* VALUES */
