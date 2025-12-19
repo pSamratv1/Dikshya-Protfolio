@@ -1,120 +1,81 @@
 import React from "react";
+import YouTubeCard from "./YoutubeCard";
 
 const PodcastSection = () => {
+  const videos = [
+    {
+      videoId: "GwxBsTwETeI",
+      title: "Finding Clarity in Chaos: The Art of Slow Growth",
+      description:
+        "Jay Parmar is a dynamic leadership coach who breaks down why 'hustle culture' is destroying our creativity. We discuss mindfulness, strategic pauses, and building a legacy.",
+      views: 12400,
+      likes: 840,
+      comments: 42,
+    },
+    {
+      videoId: "C83cm-JDpts",
+      title: "He Grew Up on Free School Meals",
+      description:
+        "Imran's commitment to mission over money faced its ultimate test in 2025 when another corporation approached Tape UK with a valuation so astronomical that most would have accepted without hesitation.",
+      views: 12400,
+      likes: 840,
+      comments: 42,
+    },
+    {
+      videoId: "FMGvpe4IhFM",
+      title: "Toxic Positivity, Burnout & Beyond",
+      description:
+        "In this real-talk episode, psychologist and mindset coach Maija Morton dives into the messy truths behind toxic positivity, burnout, anxiety, and the spiritual side of mindset work. If you’ve ever felt like the “positive vibes only” chorus isn’t landing, this episode is for you.",
+      views: 12400,
+      likes: 840,
+      comments: 42,
+    },
+    {
+      videoId: "Gd9Oh5jI4Hc",
+      title: "What Motherhood & Spirituality Really Teach Us",
+      description:
+        "In this inspiring episode, we sit down with Janaki Pun to explore the deeper connections between spirituality, motherhood, gentle parenting, and nature. Known for her wisdom and grounded perspective, Janaki shares powerful insights on how parenting is not just about raising children, but also about raising ourselves.",
+      views: 12400,
+      likes: 840,
+      comments: 42,
+    },
+  ];
+
   return (
-    <section id="podcast" className="podcast-section">
-      <div className="container">
-        {/* Header: Editorial Style (Left Title, Right Link) */}
-        <div className="podcast-header fade-in-up">
+    <section id="podcast" className="podcast-section container">
+      <div className="podcast-container">
+        {/* Header: Clean, Minimal, aligned to baseline */}
+        <div className="podcast-header">
           <div className="header-left">
-            <span className="eyebrow">The Podcast</span>
-            <h2 className="cursive">Niche with Dikshya</h2>
+            <span className="eyebrow fade-in-up">The Podcasts</span>
+            <h2 className="cursive fade-in-up delay-1">Niche with Dikshya</h2>
           </div>
           <div className="header-right">
             <a
-              href="https://youtube.com"
+              href="https://youtube.com/@Nichewithdikshya" // Replace with actual channel link
               target="_blank"
-              className="view-all-link"
+              rel="noopener noreferrer"
+              className="cta-link"
             >
-              View All Episodes <span className="arrow">→</span>
+              View Channel <span className="arrow">→</span>
             </a>
           </div>
         </div>
 
-        {/* The Grid */}
-        <div className="episodes-grid">
-          {/* Episode Card 1 */}
-          <article className="episode-card fade-in-up delay-1">
-            <div className="card-image-wrapper">
-              <img
-                src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=800&auto=format&fit=crop"
-                alt="Episode 38"
-              />
-              <div className="play-overlay">
-                <span className="play-icon">▶</span>
-              </div>
-            </div>
-            <div className="card-content">
-              <span className="episode-meta">Episode 38</span>
-              <h3>The Art of Intentional Living</h3>
-              <p>
-                Why slowing down is the fastest way to grow. A conversation on
-                mindfulness in business.
-              </p>
-              <a href="#" className="card-link">
-                Listen Now
-              </a>
-            </div>
-          </article>
-
-          {/* Episode Card 2 */}
-          <article className="episode-card fade-in-up delay-2">
-            <div className="card-image-wrapper">
-              <img
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop"
-                alt="Episode 37"
-              />
-              <div className="play-overlay">
-                <span className="play-icon">▶</span>
-              </div>
-            </div>
-            <div className="card-content">
-              <span className="episode-meta">Episode 37</span>
-              <h3>Building Your Personal Niche</h3>
-              <p>
-                How to find clarity in a crowded market and stand out by being
-                yourself.
-              </p>
-              <a href="#" className="card-link">
-                Listen Now
-              </a>
-            </div>
-          </article>
-
-          {/* Episode Card 3 */}
-          <article className="episode-card fade-in-up delay-3">
-            <div className="card-image-wrapper">
-              <img
-                src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?q=80&w=800&auto=format&fit=crop"
-                alt="Episode 36"
-              />
-              <div className="play-overlay">
-                <span className="play-icon">▶</span>
-              </div>
-            </div>
-            <div className="card-content">
-              <span className="episode-meta">Episode 36</span>
-              <h3>Networking without the Awkwardness</h3>
-              <p>
-                Strategies for connecting with high-value individuals
-                authentically.
-              </p>
-              <a href="#" className="card-link">
-                Listen Now
-              </a>
-            </div>
-          </article>
-
-          {/* Episode Card 4 */}
-          <article className="episode-card fade-in-up delay-4">
-            <div className="card-image-wrapper">
-              <img
-                src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop"
-                alt="Episode 35"
-              />
-              <div className="play-overlay">
-                <span className="play-icon">▶</span>
-              </div>
-            </div>
-            <div className="card-content">
-              <span className="episode-meta">Episode 35</span>
-              <h3>From Fear to Confidence</h3>
-              <p>A solo episode on overcoming imposter syndrome in your 20s.</p>
-              <a href="#" className="card-link">
-                Listen Now
-              </a>
-            </div>
-          </article>
+        {/* The Hero Card */}
+        <div className="card-container-spacer">
+          {videos.map((video, index) => (
+            <YouTubeCard
+              key={index}
+              videoId={video.videoId}
+              title={video.title}
+              description={video.description}
+              views={video.views}
+              likes={video.likes}
+              comments={video.comments}
+              index={index}
+            />
+          ))}
         </div>
       </div>
     </section>

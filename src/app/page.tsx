@@ -1,6 +1,7 @@
 import AboutSection from "@/components/AboutSection";
 import HeroAnimation from "@/components/HeroAnimation";
 import PodcastSection from "@/components/PodcastSection";
+import GuestSection from "@/components/GuestSection";
 
 export default function HomePage() {
   return (
@@ -9,7 +10,10 @@ export default function HomePage() {
 
       <AboutSection />
 
-      <PodcastSection />
+      <div className="w-full md:py-20 py-16  bg-[#f4f2eb]">
+        <PodcastSection />
+      </div>
+      <GuestSection />
 
       <section id="values">
         <div className="container">
