@@ -2,7 +2,19 @@
 import React from "react";
 import { useEffect } from "react";
 
-const AboutSection = () => {
+// Define Props
+interface AboutProps {
+  data: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    body: string;
+    imageUrl: string;
+    ctaText: string;
+  };
+}
+
+const AboutSection = ({ data }: AboutProps) => {
   // Inside your component function:
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -34,39 +46,25 @@ const AboutSection = () => {
         {/* Text Column */}
         <div className="about-text-content">
           <div className="about-text-content-header">
-            <span className="eyebrow fade-in-up">About Dikshya</span>
-            <h2 className="cursive fade-in-up delay-1">
-              Confidence comes from Clarity.
-            </h2>
+            <span className="eyebrow fade-in-up">{data.eyebrow}</span>
+            <h2 className="cursive fade-in-up delay-1">{data.title}</h2>
           </div>
 
           {/* Editorial 'Lead' Paragraph - Slightly larger */}
-          <p className="about-lead fade-in-up delay-2">
-            I’m Dikshya Limbu — an entrepreneur and podcast host driven by
-            meaningful conversations and intentional growth.
-          </p>
+          <p className="about-lead fade-in-up delay-2">{data.lead}</p>
 
           {/* Standard Body Text */}
-          <p className="about-body fade-in-up delay-3">
-            Through business, networking, and media, I connect people with
-            ideas, opportunities, and perspectives that challenge how we think
-            about success. I believe true influence is quiet, consistent, and
-            built on the foundation of knowing exactly who you are.
-          </p>
+          <p className="about-body fade-in-up delay-3">{data.body}</p>
 
           {/* Optional: Signature or small link for extra polish */}
           <a href="#contact" className="cta-link fade-in-up delay-3">
-            Read My Story
+            {data.ctaText}
           </a>
         </div>
 
         {/* Image Column */}
         <div className="about-image-wrapper fade-in-up delay-2">
-          <img
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1200&auto=format&fit=crop"
-            alt="Dikshya Limbu"
-            className="about-img"
-          />
+          <img src={data.imageUrl} alt="Dikshya Limbu" className="about-img" />
         </div>
       </div>
     </section>

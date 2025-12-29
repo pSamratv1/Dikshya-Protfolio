@@ -8,67 +8,22 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const GUESTS = [
-  {
-    name: "Douglas Galveston",
-    role: "Producer",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop",
-    link: "#",
-  },
-  {
-    name: "Gabriela Shelby",
-    role: "Researcher",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=600&auto=format&fit=crop",
-    link: "#",
-  },
-  {
-    name: "Carly Ferris",
-    role: "Storyteller",
-    image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
-    link: "#",
-  },
-  {
-    name: "Juliana Silva",
-    role: "Audio Eng.",
-    image:
-      "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=600&auto=format&fit=crop",
-    link: "#",
-  },
-  {
-    name: "Marcus Thorne",
-    role: "Editor",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=600&auto=format&fit=crop",
-    link: "#",
-  },
-  {
-    name: "Elena Kovic",
-    role: "Strategist",
-    image:
-      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600&auto=format&fit=crop",
-    link: "#",
-  },
-  {
-    name: "David Chen",
-    role: "Sound Design",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=600&auto=format&fit=crop",
-    link: "#",
-  },
-  {
-    name: "Sarah Jenkins",
-    role: "Marketing",
-    image:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=600&auto=format&fit=crop",
-    link: "#",
-  },
-];
+// 1. Define Props
+interface Guest {
+  id: string;
+  name: string;
+  role: string;
+  image: string;
+  link: string;
+}
 
-export default function GuestsSection() {
+interface GuestProps {
+  data: Guest[];
+}
+
+export default function GuestsSection({ data }: GuestProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const headerRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(4);
@@ -93,7 +48,8 @@ export default function GuestsSection() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const maxIndex = GUESTS.length - itemsToShow;
+  const guestsList = data || []; // Safety check
+  const maxIndex = Math.max(0, guestsList.length - itemsToShow);
 
   // 2. Initial Animation (Fade Up)
   useEffect(() => {
@@ -106,8 +62,8 @@ export default function GuestsSection() {
         stagger: 0.1,
         ease: "power3.out",
         scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 75%",
+          trigger: headerRef.current,
+          start: "top 50%",
         },
       });
     });
@@ -137,10 +93,10 @@ export default function GuestsSection() {
   };
 
   return (
-    <section ref={sectionRef} className="guests-section">
-      <div className="container">
+    <section id="#guests" ref={sectionRef} className="container">
+      <div className="guests-section ">
         {/* Header */}
-        <div className="guests-header">
+        <div ref={headerRef} className="guests-header">
           <div className="header-content">
             <span className="eyebrow fade-in-up delay-1">The Network</span>
             <h2 className="cursive fade-in-up delay-1">Featured Guests</h2>
@@ -171,7 +127,7 @@ export default function GuestsSection() {
 
           {/* Sliding Track */}
           <div ref={trackRef} className="guests-track">
-            {GUESTS.map((guest, index) => (
+            {guestsList.map((guest, index) => (
               <Link
                 key={index}
                 href={guest.link}

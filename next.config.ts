@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "i.ytimg.com",
+        hostname: "ik.imagekit.io",
       },
       {
         protocol: "https",

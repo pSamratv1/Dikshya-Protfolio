@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
+import { CartProvider } from "./context/cartContext";
+import CartDrawer from "@/components/ui/CartDrawer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -77,8 +80,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
-      <body>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
+        <body>
+          <CartProvider>
+            <CartDrawer />
+            {children}
+          </CartProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
