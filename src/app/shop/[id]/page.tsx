@@ -15,7 +15,7 @@ type Props = {
 export default async function ProductPage({ params }: Props) {
   const { id } = await params;
   const products = await getProducts();
-  const product = products.find((p) => p.id === id);
+  const product = products.find((p: any) => p.id === id);
   const allProducts = await getProducts();
   const relatedProducts = allProducts.filter((p) => p.id !== id).slice(0, 4);
   const reviews = await getProductReviews(id);
