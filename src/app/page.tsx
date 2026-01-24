@@ -7,6 +7,7 @@ import GallerySection from "@/components/GalleySection";
 import TestimonialSection from "@/components/TestimonailSection";
 import ContactSection from "@/components/ConatctSection";
 import Footer from "@/components/Footer";
+import ShopPreviewSection from "@/components/ShopPreviewSection";
 
 // Force dynamic rendering so admin updates show immediately
 export const dynamic = "force-dynamic";
@@ -19,7 +20,7 @@ export default async function HomePage() {
       <HeroAnimation data={data.hero} />
 
       <AboutSection data={data.about} />
-
+      {/* <ShopPreviewSection products={data.products} /> */}
       <div id="podcast" className="w-full md:py-20 py-16  bg-[#f4f2eb]">
         <PodcastSection data={data.podcasts} />
       </div>

@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { CartProvider } from "./context/cartContext";
 import CartDrawer from "@/components/ui/CartDrawer";
+import Providers from "@/components/Providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -83,10 +84,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
         <body>
-          <CartProvider>
-            <CartDrawer />
-            {children}
-          </CartProvider>
+          <Providers>{children}</Providers>
         </body>
       </html>
     </ClerkProvider>

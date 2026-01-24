@@ -75,11 +75,67 @@ model ContactSettings {
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String      @id @default(uuid())
   name        String
   price       Float
+  quantity    String?
   description String
+  details     String?     @default("Handcrafted.")
+  care        String?
   images      String[]
-  category    String   @default("Collection")
-  createdAt   DateTime @default(now())
+  videos      String[]    // <--- NEW: Array of video URLs (MP4/WebM)
+  category    String      @default("Collection")
+  createdAt   DateTime    @default(now())
+  orderItems  OrderItem[]
+  reviews     Review[]    // <--- NEW: Relation to reviews
+}
+// ... existing models
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int      // 1 to 5
+  
+  // --- NEW FIELDS ---
+  title     String?  // Title of the review (e.g. "Great product!")
+  comment   String   // Main review text
+  recommend Boolean  @default(true) // "Yes, I recommend this"
+  
+  // User Snapshot (Stored directly on review for easy display)
+  userId     String
+  userName   String
+  userAvatar String? 
+
+  // Relations
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  orderNumber     Int         @default(autoincrement()) // Friendly ID (e.g. #1001)
+  total           Float
+  status          String      @default("PENDING") // PENDING, PAID, FAILED
+  isPaid          Boolean     @default(false)
+  
+  stripeSessionId String?     @unique // To link Stripe back to this order
+  
+  // User info (snapshot at time of purchase)
+  userId          String?
+  customerEmail   String?     // Important for Guest Checkout
+  address         String?     // Stored as JSON string
+  
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
 }

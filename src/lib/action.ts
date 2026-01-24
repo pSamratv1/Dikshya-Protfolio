@@ -2,6 +2,7 @@
 
 import { prisma } from "./prsima";
 import { revalidatePath } from "next/cache";
+import { auth, currentUser } from "@clerk/nextjs/server";
 
 // --- 1. HERO SECTION ---
 
@@ -64,7 +65,7 @@ export async function updateAbout(data: any) {
 
 export async function getPodcasts() {
   // Sort by 'order' so you can arrange them in Admin
-  return await prisma.podcast.findMany({ orderBy: { order: "asc" } });
+  return await prisma.podcast.findMany();
 }
 
 export async function addPodcast(data: any) {
@@ -178,31 +179,154 @@ export async function getProducts() {
   return await prisma.product.findMany({ orderBy: { createdAt: "desc" } });
 }
 
-export async function getProduct(id: string) {
-  return await prisma.product.findUnique({ where: { id } });
-}
-
 export async function addProduct(data: any) {
-  const { id, price, ...rest } = data;
+  const {
+    id,
+    name,
+    price,
+    images,
+    videos,
+    details,
+    care,
+    description,
+    category,
+    quantity,
+    createdAt,
+    orderItems,
+    reviews,
+  } = data;
   await prisma.product.create({
     data: {
+      id,
+      name,
+      description,
+      category,
+      quantity,
+      createdAt,
+      orderItems,
+      reviews,
+      price: parseFloat(price),
+      details: details || "",
+      care: care || "",
+      images: images || [],
+      videos: videos || [],
+    },
+  });
+
+  revalidatePath("/shop");
+  revalidatePath("/admin");
+}
+
+// UPDATE Product
+export async function updateProduct(id: string, data: any) {
+  const { price, quantity, ...rest } = data; // Destructure to handle price conversion
+  await prisma.product.update({
+    where: { id },
+    data: {
       ...rest,
-      price: parseFloat(price), // Ensure price is a number
+      price: parseFloat(price),
+      // quantity: parseInt(quantity),
     },
   });
   revalidatePath("/shop");
   revalidatePath("/admin");
 }
 
+// DELETE Product
 export async function deleteProduct(id: string) {
   await prisma.product.delete({ where: { id } });
   revalidatePath("/shop");
   revalidatePath("/admin");
 }
 
+// --- REVIEW ACTIONS ---
+export async function getProductReviews(productId: string) {
+  return await prisma.review.findMany({
+    where: { productId },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+// lib/action.ts
+
+export async function addReview(productId: string, data: any) {
+  console.log("✅ SERVER ACTION HIT. ProductID:", productId);
+  console.log("✅ Data Received:", data);
+
+  const user = await currentUser();
+
+  if (!user) {
+    console.log("❌ No User Found");
+    throw new Error("You must be logged in to write a review.");
+  }
+
+  try {
+    await prisma.review.create({
+      data: {
+        rating: Number(data.rating),
+        title: data.title || null,
+        comment: data.comment || data.content || "",
+        recommend: String(data.recommend) === "true",
+        productId: productId,
+        userId: user.id,
+        userName: `${user.firstName} ${user.lastName}`,
+        userAvatar: user.imageUrl || null,
+      },
+    });
+
+    console.log("✅ Database Entry Created");
+    revalidatePath(`/shop/${productId}`);
+  } catch (dbError) {
+    console.error("❌ Prisma Error:", dbError);
+    throw new Error("Database failed to save review");
+  }
+}
+
+// --- RELATED PRODUCTS ---
+export async function getRelatedProducts(currentId: string) {
+  // Get 4 products that are NOT the current one
+  return await prisma.product.findMany({
+    where: { id: { not: currentId } },
+    take: 4,
+    orderBy: { createdAt: "desc" }, // or randomize if you prefer
+  });
+}
+
+// --- SHOP ACTIONS ---
+
+// 4. Create Order (Checkout)
+export async function createOrder(
+  cartItems: any[],
+  total: number,
+  userId: string,
+  customerEmail: string
+) {
+  try {
+    const order = await prisma.order.create({
+      data: {
+        userId,
+        customerEmail,
+        total,
+        status: "paid", // Simulating successful payment
+        items: {
+          create: cartItems.map((item) => ({
+            productId: item.id,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        },
+      },
+    });
+    return { success: true, orderId: order.id };
+  } catch (error) {
+    console.error("Order Error:", error);
+    return { success: false, error: "Failed to create order" };
+  }
+}
+
 // --- MASTER FETCH (For Homepage) ---
 export async function getPortfolioData() {
-  const [hero, about, podcasts, guests, gallery, testimonials] =
+  const [hero, about, podcasts, guests, gallery, testimonials, products] =
     await Promise.all([
       getHero(),
       getAbout(),
@@ -210,7 +334,24 @@ export async function getPortfolioData() {
       getGuests(),
       getGallery(),
       getTestimonials(),
+      getProducts(),
     ]);
 
-  return { hero, about, podcasts, guests, gallery, testimonials };
+  return { hero, about, podcasts, guests, gallery, testimonials, products };
+}
+
+function timeAgo(dateString: string) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  let interval = seconds / 31536000;
+  if (interval > 1) return Math.floor(interval) + " years ago";
+  interval = seconds / 2592000;
+  if (interval > 1) return Math.floor(interval) + " months ago";
+  interval = seconds / 604800; // weeks
+  if (interval > 1) return Math.floor(interval) + " weeks ago";
+  interval = seconds / 86400;
+  if (interval > 1) return Math.floor(interval) + " days ago";
+  return "Today";
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Header from "./Header";
 
 // 1. Define the Prop Type
 interface HeroProps {
@@ -52,39 +53,9 @@ export default function HeroSequence({ data }: HeroProps) {
       {/* --- LAYER 2: THE SLIDING OVERLAY --- */}
       <div className="editorial-overlay">
         {/* --- LAYER 3: NAVBAR (Inside Overlay Context) --- */}
-        <nav className="editorial-nav">
-          <div className="nav-group nav-left">
-            <a href="#about" className="nav-link">
-              About
-            </a>
-            <a href="#podcast" className="nav-link">
-              Podcast
-            </a>
-            <a href="#guests" className="nav-link">
-              Guests
-            </a>
-            <a href="#gallery" className="nav-link">
-              Gallery
-            </a>
-            <a href="#testimonials" className="nav-link">
-              Testimonials
-            </a>
-            <a href="#contact" className="nav-link">
-              Contact
-            </a>
-          </div>
-          <div className="nav-center">
-            <a href="#" className="logo">
-              DIKSHYA LIMBU
-            </a>
-          </div>
-          <div className="nav-group nav-right">
-            <a href="#" className="nav-link">
-              Subscribe
-            </a>
-          </div>
-        </nav>
-
+        <Header />
+        {/* Reels format Slider For Reels */}
+        {/* Domin .co.uk */}
         {/* --- LAYER 4: HERO CONTENT --- */}
         <div className="hero-content">
           <span className="eyebrow animate-item animate-item-delay-1">

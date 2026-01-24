@@ -14,12 +14,15 @@ import {
   addGalleryImage,
   deleteGalleryImage,
   addProduct,
+  updateProduct,
+  deleteProduct,
   addTestimonial,
   updateTestimonial,
   deleteTestimonial,
 } from "@/lib/action";
 import { extractYouTubeID, getYouTubeThumbnail } from "@/lib/utils";
 import ImagePicker from "@/components/ui/ImageUpload";
+import ProductImageUpload from "@/components/ui/ProductImageUpload";
 
 // --- ICONS ---
 const MenuIcon = () => (
@@ -100,7 +103,7 @@ const StyledTextArea = (
   <textarea
     {...props}
     rows={props.rows || 4}
-    className="w-full bg-[#FAFAFA] border border-[#E5E2D9] p-4 md:p-6 font-serif text-base md:text-lg text-[#1C1B1A] placeholder:font-sans placeholder:text-xs placeholder:uppercase placeholder:tracking-widest placeholder:text-gray-300 focus:outline-none focus:border-[#1C1B1A] focus:bg-white transition-all duration-500 resize-none"
+    className="w-full bg-[#FAFAFA] border border-[#E5E2D9] p-1 md:p-2 font-serif text-base md:text-lg text-black placeholder:font-sans placeholder:text-xs placeholder:uppercase placeholder:tracking-widest placeholder:text-gray-300 focus:outline-none focus:border-[#1C1B1A] focus:bg-white transition-all duration-500 resize-none"
   />
 );
 
@@ -129,6 +132,50 @@ const ListItem = ({ title, subtitle, image, onEdit, onDelete }: any) => (
         <h4 className="font-serif text-lg leading-none truncate">{title}</h4>
         <p className="font-sans text-[9px] uppercase tracking-widest text-gray-400 mt-1 truncate">
           {subtitle}
+        </p>
+      </div>
+    </div>
+    <div className="flex items-center gap-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 self-end md:self-auto">
+      {onEdit && (
+        <button
+          onClick={onEdit}
+          className="text-[9px] uppercase tracking-widest text-gray-400 hover:text-black"
+        >
+          Edit
+        </button>
+      )}
+      <button
+        onClick={onDelete}
+        className="text-[9px] uppercase tracking-widest text-red-300 hover:text-red-600"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+);
+
+const ProductListItem = ({
+  title,
+  price,
+  category,
+  quantity,
+  image,
+  onEdit,
+  onDelete,
+}: any) => (
+  <div className="group flex flex-col md:flex-row md:items-center justify-between p-4 border-b border-gray-100 hover:bg-white transition-all duration-300 gap-4">
+    <div className="flex items-center gap-4">
+      {image && (
+        <img
+          src={image}
+          alt=""
+          className="w-10 h-10 object-cover rounded-full grayscale group-hover:grayscale-0 transition-all"
+        />
+      )}
+      <div className="overflow-hidden">
+        <h4 className="font-serif text-lg leading-none truncate">{title}</h4>
+        <p className="font-sans text-[9px] uppercase tracking-widest text-gray-400 mt-1 truncate">
+          {price} | {category} | {quantity}
         </p>
       </div>
     </div>
@@ -191,16 +238,20 @@ export default function Dashboard({ initialData }: { initialData: any }) {
   });
 
   // Product State
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [productForm, setProductForm] = useState({
     name: "",
     price: "",
     description: "",
-    image1: "",
-    image2: "",
+    category: "",
+    quantity: "",
+    images: [] as string[],
+    videos: [] as string[],
   });
 
   const [isEditingPodcast, setIsEditingPodcast] = useState(false);
   const [isEditingTestimonial, setIsEditingTestimonial] = useState(false);
+  const [isEditingProduct, setIsEditingProduct] = useState(false);
 
   const [galleryUrl, setGalleryUrl] = useState("");
 
@@ -283,6 +334,12 @@ export default function Dashboard({ initialData }: { initialData: any }) {
     setIsEditingPodcast(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // Index for additional Images
+  let actualImageIndex: number = 1;
+
+  // Index for additional Videos
+  let actualVideoIndex: number = 1;
 
   return (
     <div className="min-h-screen bg-[#F2F0E9] text-[#1C1B1A] font-sans">
@@ -519,6 +576,14 @@ export default function Dashboard({ initialData }: { initialData: any }) {
                     }
                   />
                 </div>
+                <InputGroup label="Profile Link">
+                  <StyledInput
+                    value={guestForm.link}
+                    onChange={(e) =>
+                      setGuestForm({ ...guestForm, link: e.target.value })
+                    }
+                  />
+                </InputGroup>
                 <div className="mt-8 flex flex-col md:flex-row gap-4">
                   {isEditingGuest && (
                     <button
@@ -830,23 +895,27 @@ export default function Dashboard({ initialData }: { initialData: any }) {
           )}
 
           {/* PRODUCTS TAB */}
+          {/* --- PRODUCTS TAB --- */}
           {activeTab === "products" && (
             <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
               <h1 className="font-serif font-medium italic text-4xl md:text-6xl mb-8 md:mb-12 border-l-2 border-black pl-6">
                 Store
               </h1>
 
-              <div className="bg-white p-6 md:p-12 shadow-sm mb-12">
-                <InputGroup label="Product Name">
-                  <StyledInput
-                    value={productForm.name}
-                    onChange={(e) =>
-                      setProductForm({ ...productForm, name: e.target.value })
-                    }
-                  />
-                </InputGroup>
-
+              {/* --- PRODUCT FORM --- */}
+              <div className="bg-white p-6 md:p-12 shadow-sm mb-12 relative">
+                <div className="absolute top-4 right-4 text-[9px] uppercase tracking-widest text-gray-300">
+                  {isEditingProduct ? "Editing Product" : "New Entry"}
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <InputGroup label="Product Name">
+                    <StyledInput
+                      value={productForm.name}
+                      onChange={(e) =>
+                        setProductForm({ ...productForm, name: e.target.value })
+                      }
+                    />
+                  </InputGroup>
                   <InputGroup label="Price">
                     <StyledInput
                       type="number"
@@ -859,10 +928,30 @@ export default function Dashboard({ initialData }: { initialData: any }) {
                       }
                     />
                   </InputGroup>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <InputGroup label="Quantity">
+                    <StyledInput
+                      type="number"
+                      value={productForm.quantity}
+                      onChange={(e) =>
+                        setProductForm({
+                          ...productForm,
+                          quantity: e.target.value,
+                        })
+                      }
+                    />
+                  </InputGroup>
                   <InputGroup label="Category">
                     <StyledInput
-                      value="Collection"
-                      disabled
+                      value={productForm.category}
+                      onChange={(e) =>
+                        setProductForm({
+                          ...productForm,
+                          category: e.target.value,
+                        })
+                      }
                       className="opacity-50"
                     />
                   </InputGroup>
@@ -880,40 +969,224 @@ export default function Dashboard({ initialData }: { initialData: any }) {
                   />
                 </InputGroup>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                  <ImagePicker
-                    label="Main Image"
-                    onImageSelect={(url) =>
-                      setProductForm({ ...productForm, image1: url })
+                {/* --- DYNAMIC IMAGES SECTION --- */}
+                <div className="mt-8 border-t border-gray-100 pt-8">
+                  <p className="font-sans text-[10px] uppercase tracking-widest text-gray-400 mb-6">
+                    Product Images (First 2 are Front/Hover)
+                  </p>
+
+                  {/* Dynamic Image Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {productForm.images.map((imgUrl: string, index: number) => {
+                      // Label logic: 0=Main, 1=Hover, 2+=Gallery
+                      const label =
+                        index === 0
+                          ? "Main Image"
+                          : index === 1
+                          ? "Hover Reveal"
+                          : `Gallery Image ${index + 1}`;
+
+                      return (
+                        <div key={index}>
+                          {" "}
+                          {/* Using index key ensures input stays mounted */}
+                          <ProductImageUpload
+                            label={label}
+                            defaultValue={imgUrl} // This now auto-updates thanks to Step 1
+                            onSuccess={(url) =>
+                              setProductForm((prev: any) => {
+                                const images = [...prev.images];
+                                images[index] = url;
+                                return { ...prev, images };
+                              })
+                            }
+                          />
+                          {/* Remove button for extra images */}
+                          {index > 1 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setProductForm((prev: any) => {
+                                  const images = prev.images.filter(
+                                    (_: any, i: number) => i !== index
+                                  );
+                                  return { ...prev, images };
+                                })
+                              }
+                              className="text-[9px] text-red-400 mt-2 hover:underline"
+                            >
+                              Remove Image
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setProductForm((prev: any) => ({
+                        ...prev,
+                        images: [...prev.images, ""],
+                      }))
                     }
-                  />
-                  <ImagePicker
-                    label="Hover Image"
-                    onImageSelect={(url) =>
-                      setProductForm({ ...productForm, image2: url })
-                    }
-                  />
+                    className="mt-6 text-[9px] uppercase tracking-widest border-b border-black pb-1"
+                  >
+                    + Add Another Image
+                  </button>
                 </div>
 
-                <div className="mt-8">
+                {/* --- DYNAMIC VIDEOS SECTION --- */}
+                <div className="mt-8 border-t border-gray-100 pt-8">
+                  <p className="font-sans text-[10px] uppercase tracking-widest text-gray-400 mb-6">
+                    Shoppable Videos (MP4 Uploads or Links)
+                  </p>
+
+                  <div className="space-y-8">
+                    {productForm.videos.map((vidUrl: string, index: number) => (
+                      <div key={index} className="relative">
+                        {/* REUSE IMAGE PICKER FOR VIDEOS */}
+                        <ImagePicker
+                          label={`Video ${index + 1}`}
+                          defaultValue={vidUrl}
+                          onImageSelect={(url) =>
+                            setProductForm((prev: any) => {
+                              const videos = [...prev.videos];
+                              videos[index] = url;
+                              return { ...prev, videos };
+                            })
+                          }
+                        />
+
+                        {/* Remove Button (Positioned to the right of the label) */}
+                        <button
+                          onClick={() =>
+                            setProductForm((prev: any) => {
+                              const videos = prev.videos.filter(
+                                (_: any, i: number) => i !== index
+                              );
+                              return { ...prev, videos };
+                            })
+                          }
+                          className="absolute -bottom-4 right-0 text-red-400 text-[9px] uppercase tracking-widest hover:text-red-600 hover:underline"
+                        >
+                          Remove Video
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setProductForm((prev: any) => ({
+                        ...prev,
+                        videos: [...prev.videos, ""], // Add empty slot
+                      }))
+                    }
+                    className="mt-6 text-[9px] uppercase tracking-widest border-b border-black pb-1 hover:opacity-70 transition-opacity"
+                  >
+                    + Add Another Video
+                  </button>
+                </div>
+
+                {/* --- FORM ACTIONS --- */}
+                <div className="mt-12 pt-8 border-t border-gray-100 flex flex-col md:flex-row gap-4">
+                  {isEditingProduct && (
+                    <button
+                      onClick={() => {
+                        setIsEditingProduct(false);
+                        setProductForm({
+                          name: "",
+                          price: "",
+                          quantity: "",
+                          category: "",
+                          description: "",
+                          images: ["", ""], // Reset to 2 slots
+                          videos: ["", ""],
+                        });
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      className="px-8 py-4 border border-gray-200 text-[10px] uppercase tracking-widest hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  )}
+
                   <ActionButton
                     onClick={() =>
                       startTransition(async () => {
+                        // Clean up empty slots before sending
                         const finalData = {
                           ...productForm,
-                          images: [
-                            productForm.image1,
-                            productForm.image2,
-                          ].filter(Boolean),
+                          images: productForm.images.filter(Boolean),
+                          videos: productForm.videos.filter(Boolean),
                         };
-                        await addProduct(finalData);
-                        alert("Product Added");
+
+                        if (isEditingProduct) {
+                          await updateProduct(editingProductId!, finalData);
+                          alert("Product Updated");
+                          setIsEditingProduct(false);
+                        } else {
+                          await addProduct(finalData);
+                          alert("Product Added");
+                        }
+
+                        // Reset Form
+                        setProductForm({
+                          name: "",
+                          price: "",
+                          quantity: "",
+                          category: "",
+                          description: "",
+                          images: ["", ""],
+                          videos: ["", ""],
+                        });
                       })
                     }
                     loading={isPending}
                   >
-                    Add Product
+                    {isEditingProduct ? "Save Changes" : "Add Product"}
                   </ActionButton>
+                </div>
+              </div>
+
+              {/* --- PRODUCT ARCHIVE LIST --- */}
+              <div className="md:pl-6">
+                <p className="font-sans text-[10px] uppercase tracking-widest text-gray-400 mb-6">
+                  Active Products ({initialData.products?.length || 0})
+                </p>
+                <div className="space-y-2">
+                  {initialData.products?.map((p: any) => (
+                    <ProductListItem
+                      key={p.id}
+                      title={p.name}
+                      price={`Rs ${p.price}`}
+                      category={p.category}
+                      quantity={`${p.quantity} pcs`}
+                      image={p.images[0] || null} // Show first image as thumbnail
+                      onEdit={() => {
+                        // Populate form with existing data
+                        setEditingProductId(p.id);
+                        setProductForm({
+                          name: p.name,
+                          price: p.price,
+                          quantity: p.quantity,
+                          category: p.category,
+                          description: p.description,
+                          // Ensure arrays have at least 2 slots for UI consistency
+                          images: p.images.length > 0 ? p.images : ["", ""],
+                          videos: p.videos.length > 0 ? p.videos : ["", ""],
+                        });
+                        setIsEditingProduct(true);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      onDelete={() =>
+                        startTransition(() => deleteProduct(p.id))
+                      }
+                    />
+                  ))}
                 </div>
               </div>
             </div>
