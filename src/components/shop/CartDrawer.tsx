@@ -23,32 +23,36 @@ export default function CartDrawer() {
   }, [isCartOpen]);
 
   const onCheckout = async () => {
+    // 1. Auth Check (Keep existing logic)
     if (!isSignedIn) {
       toggleCart();
-      // Open Login Modal, redirect to checkout after success
       openSignIn({
-        redirectUrl: "/shop/checkout",
-        afterSignInUrl: "/shop/checkout",
+        redirectUrl: "/shop", // Usually redirect back to shop or keep them on current page
+        afterSignInUrl: "/shop",
       });
-    } else {
-      try {
-        setLoading(true);
-        // Call our API route
-        const response = await axios.post("/api/checkout", {
-          cartItems: cart,
-        });
+      return; // Stop execution
+    }
 
-        // Redirect to Stripe URL
-        window.location.href = response.data.url;
-      } catch (error) {
-        console.error("Checkout Error:", error);
-        alert("Something went wrong with checkout.");
-      } finally {
-        setLoading(false);
-      }
+    // 2. Checkout Process
+    try {
+      setLoading(true);
+
+      const response = await axios.post("/api/checkout", {
+        cartItems: cart,
+      });
+
+      // Redirect to Stripe URL
+      window.location.href = response.data.url;
+    } catch (error: any) {
+      console.error("Checkout Error:", error);
+
+      // 👇 THIS IS THE FIX: Read the specific error message from the server
+      const serverMessage = error.response?.data || error.message;
+      alert(`Payment Failed: ${serverMessage}`);
+    } finally {
+      setLoading(false);
     }
   };
-
   return (
     <>
       {/* Backdrop */}
