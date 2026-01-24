@@ -6,8 +6,22 @@ import Footer from "@/components/Footer";
 
 export const dynamic = "force-dynamic";
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  quantity: string | null;
+  description: string;
+  details: string | null;
+  care: string | null;
+  images: string[];
+  videos: string[];
+  category: string;
+  createdAt: Date;
+}
+
 export default async function ShopPage() {
-  const products = await getProducts();
+  const products: Product[] = await getProducts();
 
   return (
     <div className="min-h-screen  text-black ">
@@ -28,8 +42,7 @@ export default async function ShopPage() {
           {/* Product Grid */}
           <div className="flex-grow">
             <div className="px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-16">
-              {products.map((product) => {
-                console.log(product, "Product");
+              {products.map((product: Product) => {
                 return <ProductCard key={product.id} product={product} />;
               })}
             </div>
