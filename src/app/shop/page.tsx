@@ -10,7 +10,7 @@ interface Product {
   id: string;
   name: string;
   price: number;
-  quantity: string | null;
+  quantity: number | null;
   description: string;
   details: string | null;
   care: string | null;
