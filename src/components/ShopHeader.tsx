@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { Search, ShoppingBag, X, User } from "lucide-react";
+import { Search, ShoppingBag, X, User, Menu, Plus, Minus } from "lucide-react";
 
 // --- MENU DATA ---
 const NAV_DATA = [
@@ -89,18 +89,64 @@ const NAV_DATA = [
   },
 ];
 
+// Mobile Accordion Component
+const MobileMenuItem = ({ category, onClick }: any) => {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="border-b border-gray-100 last:border-0">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex justify-between items-center py-4 text-left font-serif text-2xl tracking-wide"
+      >
+        <span>{category.label}</span>
+        {isOpen ? <Minus size={16} /> : <Plus size={16} />}
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          isOpen ? "max-h-96 pb-4" : "max-h-0"
+        }`}
+      >
+        <div className="flex flex-col gap-3 pl-4">
+          {category.items.map((item: any) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              onClick={onClick}
+              className="font-sans text-[11px] uppercase tracking-[0.15em] text-gray-500 hover:text-black"
+            >
+              {item.name}
+            </Link>
+          ))}
+          <Link
+            href={category.href}
+            onClick={onClick}
+            className="font-sans text-[11px] uppercase tracking-[0.15em] text-[#B0A285] mt-2"
+          >
+            View All
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function ShopNavbar() {
   const { toggleCart, cartCount } = useCart();
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Scroll effect
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    if (isMobileMenuOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "unset";
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.body.style.overflow = "unset";
+    };
+  }, [isMobileMenuOpen]);
 
   const activeCategory = NAV_DATA.find((c) => c.label === hoveredCategory);
 
@@ -108,59 +154,76 @@ export default function ShopNavbar() {
     <>
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-300 border-b hover:bg-white ${
-          isScrolled || hoveredCategory
+          isScrolled || hoveredCategory || isMobileMenuOpen
             ? "bg-white border-gray-100 text-black"
             : "bg-transparent border-transparent text-black"
         }`}
         onMouseLeave={() => setHoveredCategory(null)}
       >
-        <div className="flex justify-between items-center px-6 md:px-12 h-[80px]">
-          {/* LEFT: Menu Links */}
-          <div className="hidden md:flex gap-8 items-center h-full">
-            {NAV_DATA.map((cat) => (
-              <div
-                key={cat.label}
-                onMouseEnter={() => setHoveredCategory(cat.label)}
-                className="relative h-full flex items-center"
-              >
-                <Link
-                  href={cat.href}
-                  className={`nav-link transition-colors ${
-                    hoveredCategory === cat.label
-                      ? "text-gray-500 underline underline-offset-4"
-                      : "hover:text-gray-500"
-                  }`}
-                >
-                  {cat.label}
-                </Link>
-              </div>
-            ))}
-            <Link
-              href="/shop"
-              className="font-sans text-[11px] uppercase tracking-[0.15em] text-[#B0A285] hover:text-black transition-colors"
+        <div className="relative w-full flex justify-between items-center px-4 md:px-12 h-[60px] md:h-[80px]">
+          {/* --- LEFT: Hamburger (Mobile) / Links (Desktop) --- */}
+          <div className="flex items-center gap-4 flex-1">
+            {/* Hamburger Button (Mobile/Tablet Only) */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="lg:hidden p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors"
             >
-              Dikshya<span className="italic">Inc</span>
-            </Link>
+              <Menu size={24} strokeWidth={1.5} />
+            </button>
+
+            {/* Desktop Links (Hidden on Mobile/Tablet) */}
+            <div className="hidden lg:flex gap-8 items-center h-full">
+              {NAV_DATA.map((cat) => (
+                <div
+                  key={cat.label}
+                  onMouseEnter={() => setHoveredCategory(cat.label)}
+                  className="relative h-full flex items-center cursor-pointer py-8"
+                >
+                  <Link
+                    href={cat.href}
+                    className={`font-sans text-[11px] uppercase tracking-[0.15em] transition-colors ${
+                      hoveredCategory === cat.label
+                        ? "text-gray-500 underline underline-offset-4"
+                        : "hover:text-gray-500"
+                    }`}
+                  >
+                    {cat.label}
+                  </Link>
+                </div>
+              ))}
+              <Link
+                href="/shop"
+                className="font-sans text-[11px] uppercase tracking-[0.15em] text-[#B0A285] hover:text-black transition-colors"
+              >
+                Dikshya<span className="italic">Inc</span>
+              </Link>
+            </div>
           </div>
 
-          {/* CENTER: Logo */}
+          {/* --- CENTER: Logo --- */}
+          {/* 
+             Fix: On mobile, we reduce size and tracking to prevent overlap.
+             We keep absolute positioning but ensure it fits.
+          */}
           <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
             <Link
               href="/"
-              className="font-sans text-2xl uppercase tracking-widest font-bold"
+              className="font-sans font-bold whitespace-nowrap
+              text-lg tracking-wide       
+              md:text-2xl md:tracking-widest"
             >
               DIKSHYA LIMBU
             </Link>
           </div>
 
-          {/* RIGHT: Actions */}
-          <div className="flex items-center gap-6">
-            <button className="hidden lg:block nav-link hover:text-gray-500">
+          {/* --- RIGHT: Actions --- */}
+          <div className="flex items-center justify-end gap-3 md:gap-6 flex-1">
+            <button className="hidden xl:block font-sans text-[10px] uppercase tracking-widest hover:text-gray-500">
               Rewards
             </button>
 
-            {/* Account */}
-            <div className="nav-link font-sans text-[10px] uppercase tracking-widest">
+            {/* Account (Hidden on small mobile to save space, visible in menu) */}
+            <div className="hidden md:block font-sans text-[10px] uppercase tracking-widest">
               <SignedOut>
                 <SignInButton mode="modal">
                   <button className="hover:text-gray-500 transition-colors">
@@ -175,22 +238,30 @@ export default function ShopNavbar() {
               </SignedIn>
             </div>
 
-            {/* Search */}
+            {/* Search (Hide on very small screens if needed, or keep icon small) */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="hover:text-gray-500 transition-colors"
+              className="hover:text-gray-500 transition-colors p-1"
             >
-              <Search size={18} strokeWidth={1.5} />
+              <Search
+                size={20}
+                strokeWidth={1.5}
+                className="md:w-[18px] md:h-[18px]"
+              />
             </button>
 
             {/* Cart */}
             <button
               onClick={toggleCart}
-              className="flex items-center gap-2 hover:text-gray-500 transition-colors relative"
+              className="flex items-center gap-2 hover:text-gray-500 transition-colors relative p-1"
             >
-              <ShoppingBag size={18} strokeWidth={1.5} />
+              <ShoppingBag
+                size={20}
+                strokeWidth={1.5}
+                className="md:w-[18px] md:h-[18px]"
+              />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-black text-white text-[8px] w-3 h-3 flex items-center justify-center rounded-full">
+                <span className="absolute -top-1 -right-1 bg-black text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full">
                   {cartCount}
                 </span>
               )}
@@ -198,17 +269,16 @@ export default function ShopNavbar() {
           </div>
         </div>
 
-        {/* --- MEGA MENU DROPDOWN (Split Layout) --- */}
+        {/* --- DESKTOP MEGA MENU DROPDOWN --- */}
         <div
-          className={`absolute top-[80px] left-0 w-full bg-white border-b border-gray-100 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+          className={`absolute top-[80px] left-0 w-full bg-white border-b border-gray-100 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] hidden lg:block ${
             hoveredCategory
               ? "max-h-[600px] opacity-100 shadow-sm"
               : "max-h-0 opacity-0"
           }`}
         >
           {activeCategory && (
-            <div className="new-container mx-auto px-12 py-12 flex gap-12">
-              {/* LEFT SIDE: Text Links List */}
+            <div className="container mx-auto px-12 py-12 flex gap-12">
               <div className="w-1/4 border-r border-gray-100 pr-8 flex flex-col gap-6 animate-in fade-in slide-in-from-left-2 duration-500">
                 {activeCategory.items.map((item) => (
                   <Link
@@ -226,8 +296,6 @@ export default function ShopNavbar() {
                   Shop All {activeCategory.label} →
                 </Link>
               </div>
-
-              {/* RIGHT SIDE: Visual Grid */}
               <div className="w-3/4 grid grid-cols-3 gap-6 animate-in fade-in slide-in-from-right-2 duration-700 delay-100">
                 {activeCategory.items.slice(0, 3).map((item) => (
                   <Link
@@ -242,7 +310,6 @@ export default function ShopNavbar() {
                         fill
                         className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
                     </div>
                     <span className="font-sans text-[10px] uppercase tracking-[0.15em] opacity-70 group-hover:opacity-100 transition-opacity">
                       {item.name}
@@ -254,6 +321,73 @@ export default function ShopNavbar() {
           )}
         </div>
       </nav>
+
+      {/* --- MOBILE FULLSCREEN MENU --- */}
+      <div
+        className={`fixed inset-0 z-[60] bg-white transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] lg:hidden ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex justify-between items-center px-4 py-6 border-b border-gray-100">
+            <span className="font-sans text-lg uppercase tracking-widest font-bold">
+              Menu
+            </span>
+            <button onClick={() => setIsMobileMenuOpen(false)}>
+              <X size={24} strokeWidth={1.5} />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="flex-grow overflow-y-auto px-6 py-8">
+            <div className="flex flex-col gap-2">
+              {NAV_DATA.map((cat) => (
+                <MobileMenuItem
+                  key={cat.label}
+                  category={cat}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                />
+              ))}
+              <div className="border-b border-gray-100 py-4">
+                <Link
+                  href="/shop"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="font-serif text-2xl tracking-wide text-[#B0A285]"
+                >
+                  Shop All
+                </Link>
+              </div>
+            </div>
+
+            {/* Mobile Footer Links */}
+            <div className="mt-12 space-y-4">
+              <SignedIn>
+                <Link
+                  href="/account"
+                  className="flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.15em]"
+                >
+                  <User size={16} /> Account
+                </Link>
+              </SignedIn>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.15em]">
+                    <User size={16} /> Sign In
+                  </button>
+                </SignInButton>
+              </SignedOut>
+
+              <Link
+                href="/contact"
+                className="block font-sans text-[11px] uppercase tracking-[0.15em]"
+              >
+                Contact Us
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* --- SEARCH OVERLAY --- */}
       <div
@@ -277,7 +411,7 @@ export default function ShopNavbar() {
             <input
               type="text"
               placeholder="Search..."
-              className="w-full bg-transparent border-b border-gray-300 py-4 font-serif text-4xl text-center placeholder:text-gray-200 focus:outline-none focus:border-black transition-colors"
+              className="w-full bg-transparent border-b border-gray-300 py-4 font-serif text-3xl md:text-4xl text-center placeholder:text-gray-200 focus:outline-none focus:border-black transition-colors"
               autoFocus={isSearchOpen}
             />
           </form>

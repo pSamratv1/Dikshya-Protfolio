@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
-import { prisma } from "@/lib/prisma"; // Fixed typo: prsima -> prisma
+import { prisma } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 
 const corsHeaders = {
@@ -33,18 +33,18 @@ export async function POST(req: Request) {
         customerEmail: user.emailAddresses[0]?.emailAddress,
         total: 0,
         status: "PENDING",
-        isPaid: false, // Ensure this defaults to false
+        isPaid: false,
         items: {
           create: cartItems.map((item: any) => ({
             product: { connect: { id: item.id } },
             quantity: item.quantity,
-            price: Number(item.price), // Ensure number
+            price: Number(item.price),
           })),
         },
       },
     });
 
-    // 2. Format Line Items for Stripe
+    // 2. Format Line Items
     const line_items: any[] = [];
     let calculatedTotal = 0;
 
@@ -55,10 +55,9 @@ export async function POST(req: Request) {
       line_items.push({
         quantity: item.quantity,
         price_data: {
-          currency: "NPR", // Ensure your Stripe account supports NPR
+          currency: "NPR",
           product_data: {
             name: item.name,
-            // Only attach images if they are valid URLs (not relative/localhost)
             images:
               item.image && item.image.startsWith("http") ? [item.image] : [],
           },
@@ -67,18 +66,18 @@ export async function POST(req: Request) {
       });
     });
 
-    // Update total in DB
+    // Update total
     await prisma.order.update({
       where: { id: order.id },
       data: { total: calculatedTotal },
     });
 
-    // 3. Create Stripe Session (WITH ERROR HANDLING)
+    // 3. Create Stripe Session
     const session = await stripe.checkout.sessions.create({
       line_items,
       mode: "payment",
       billing_address_collection: "required",
-      customer_email: user.emailAddresses[0]?.emailAddress, // Pre-fill email for better UX
+      customer_email: user.emailAddresses[0]?.emailAddress,
       phone_number_collection: { enabled: true },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?orderId=${order.id}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/shop?canceled=1`,
@@ -87,10 +86,18 @@ export async function POST(req: Request) {
       },
     });
 
+    // --- 4. CRITICAL FIX: Save the Session ID to Database ---
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        stripeSessionId: session.id, // <--- This was missing!
+      },
+    });
+    // -------------------------------------------------------
+
     return NextResponse.json({ url: session.url }, { headers: corsHeaders });
   } catch (error: any) {
     console.error("[CHECKOUT_ERROR]", error);
-    // This returns the ACTUAL Stripe error message to your frontend alert
     return new NextResponse(error.message || "Internal Server Error", {
       status: 500,
     });

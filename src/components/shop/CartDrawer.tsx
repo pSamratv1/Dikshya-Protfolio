@@ -14,7 +14,6 @@ export default function CartDrawer() {
   const { isSignedIn } = useUser();
   const { openSignIn } = useClerk();
   const router = useRouter();
-  console.log(cart[0]?.images[0], "cart items");
 
   // Prevent background scrolling when cart is open
   useEffect(() => {

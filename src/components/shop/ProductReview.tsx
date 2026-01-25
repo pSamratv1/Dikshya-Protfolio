@@ -282,12 +282,12 @@ export default function ProductReviews({ productId, reviews = [] }: any) {
 
               {/* Content */}
               <div>
-                <h3 className="font-sans text-base font-bold mb-2">
+                <h3 className="font-sans text-base text-black font-medium mb-2">
                   {review.title}
                 </h3>
-                <p className="font-serif text-gray-700 leading-relaxed text-sm md:text-base max-w-3xl">
+                <h4 className="font-sans leading-relaxed text-sm md:text-[16px] font-medium text-gray-700 max-w-3xl">
                   {review.comment}
-                </p>
+                </h4>
               </div>
 
               {/* Footer: Helpful? */}

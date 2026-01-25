@@ -20,28 +20,39 @@ interface Product {
   createdAt: Date;
 }
 
+// ... imports
+
 export default async function ShopPage() {
   const products: Product[] = await getProducts();
 
   return (
-    <div className="min-h-screen  text-black ">
+    <div className="min-h-screen text-black bg-white">
       <ShopHeader />
 
-      <div className="pt-32 pb-20 px-6 md:px-12 max-w-[1800px] mx-auto">
-        <div className="flex justify-between items-end mb-12 border-b border-gray-100">
-          <h2 className="cursive fade-in-up delay-1">Collections</h2>
-          <span className="font-sans text-[10px] uppercase tracking-widest text-gray-400">
-            {products.length} Items
-          </span>
+      <div className="pt-24 md:pt-32 pb-20 px-4 md:px-12 max-w-[1800px] mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-end mb-8  border-b border-gray-100">
+          <h2 className="font-serif text-3xl fade-in-up delay-1">
+            Collections
+          </h2>
         </div>
 
-        <div className="flex">
-          {/* Sidebar Filter */}
-          <ShopFilter />
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          {/* Sidebar Filter (Hidden on Mobile usually, or implement mobile filter) */}
+          <div className="hidden lg:block">
+            <ShopFilter />
+          </div>
 
           {/* Product Grid */}
           <div className="flex-grow">
-            <div className="px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-16">
+            {/* 
+               Grid Fix:
+               - Mobile: 1 column (w-full)
+               - Tablet: 2 columns
+               - Laptop: 3 columns
+               - XL: 4 columns
+            */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-16">
               {products.map((product: Product) => {
                 return <ProductCard key={product.id} product={product} />;
               })}

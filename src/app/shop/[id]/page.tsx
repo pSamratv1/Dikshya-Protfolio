@@ -17,7 +17,9 @@ export default async function ProductPage({ params }: Props) {
   const products = await getProducts();
   const product = products.find((p: any) => p.id === id);
   const allProducts = await getProducts();
-  const relatedProducts = allProducts.filter((p: any) => p.id !== id).slice(0, 4);
+  const relatedProducts = allProducts
+    .filter((p: any) => p.id !== id)
+    .slice(0, 4);
   const reviews = await getProductReviews(id);
   console.log(reviews, "Reviews");
 
@@ -70,7 +72,7 @@ export default async function ProductPage({ params }: Props) {
 
         {/* 3. Recommendations (Now inside the scrollable flow) */}
 
-        <div className="w-full bg-[#F9F8F4] p-8 -mx-8 lg:mx-0 mt-20">
+        <div className="w-full  lg:mx-0 my-20">
           <h2 className="font-serif text-2xl text-center mb-8 uppercase tracking-wide">
             You May Also Like
           </h2>
