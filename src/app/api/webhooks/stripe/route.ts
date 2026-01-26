@@ -28,6 +28,8 @@ export async function POST(req: Request) {
 
   // HANDLE SUCCESSFUL PAYMENT
   if (event.type === "checkout.session.completed") {
+    console.log("webhooks is called");
+    console.log("payment is successfull");
     // 1. Get the Order ID we passed in metadata
     const orderId = session?.metadata?.orderId;
 

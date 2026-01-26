@@ -79,7 +79,7 @@ export async function POST(req: Request) {
       billing_address_collection: "required",
       customer_email: user.emailAddresses[0]?.emailAddress,
       phone_number_collection: { enabled: true },
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?orderId=${order.id}`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/shop/success?orderId=${order.id}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/shop?canceled=1`,
       metadata: {
         orderId: order.id,
