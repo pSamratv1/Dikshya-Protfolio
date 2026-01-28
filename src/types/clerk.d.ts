@@ -1,9 +1,13 @@
-import "@clerk/nextjs/server";
+export {};
 
-declare module "@clerk/nextjs/server" {
-  interface SessionClaims {
+declare global {
+  interface CustomJwtSessionClaims {
     publicMetadata: {
-      role?: "admin" | "user";
+      role?: "admin" | "customer";
     };
+  }
+
+  interface UserPublicMetadata {
+    role?: "admin" | "customer";
   }
 }

@@ -162,77 +162,144 @@ section {
 /* -------------------------------------------
            LAYER 3: NAVBAR (Fades in After Overlay)
            ------------------------------------------- */
+/* --- CORE NAV --- */
 .editorial-nav {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 1.5rem 3rem;
-  z-index: 30;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  z-index: 1000;
+  background-color: #f9f8f4;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.4s ease;
+  height: 80px;
+  display: flex;
   align-items: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-
-  /* Initial State */
-  opacity: 0;
-  transform: translateY(-10px);
-
-  /* Animation */
-  animation: fadeUpIn 0.8s var(--ease-luxury) forwards;
-  animation-delay: calc(
-    var(--delay-video-preview) + var(--duration-overlay) - 0.2s
-  );
 }
-.shop-editorial-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
+
+.nav-scrolled {
+  height: 70px;
+  background-color: rgba(249, 248, 244, 0.98);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.nav-container {
   width: 100%;
-  padding: 1.5rem 3rem;
-  z-index: 30;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0 3rem; /* Padding from the screen edges */
+
+  /* THE GRID SETUP */
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr auto 1fr; /* Left and Right are equal weight (1fr) */
   align-items: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-/* Nav Styling */
-.nav-group {
+/* --- COLUMNS --- */
+.nav-col {
   display: flex;
-  gap: 2.5rem;
+  align-items: center;
 }
-.nav-shop-group {
-  display: flex;
-  gap: 40px;
+
+.nav-left {
+  justify-content: flex-start; /* Links start at far left */
 }
+
+.nav-center {
+  justify-content: center; /* Logo stays in center */
+}
+
 .nav-right {
-  justify-content: flex-end;
+  justify-content: flex-end; /* Subscribe goes to far right */
+}
+
+/* --- LOGO --- */
+.logo {
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #1a1a1a;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* --- LINKS --- */
+.link-group {
+  display: flex;
+  gap: 2rem;
 }
 
 .nav-link {
   font-family: "Inter", sans-serif;
   font-size: 0.65rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--color-text);
+  letter-spacing: 0.1em;
+  color: #1a1a1a;
   text-decoration: none;
-  font-weight: 900;
-  transition: opacity 0.3s;
-  cursor: pointer;
-}
-.nav-link:hover {
   opacity: 0.6;
+  transition: opacity 0.3s ease;
 }
 
-.logo {
+.nav-link:hover {
+  opacity: 1;
+}
+
+/* --- SUBSCRIBE BUTTON --- */
+.subscribe-btn {
   font-family: "Inter", sans-serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  font-size: 0.65rem;
+  font-weight: 700;
   text-transform: uppercase;
-  color: var(--color-text);
+  letter-spacing: 0.12em;
+  color: #1a1a1a;
   text-decoration: none;
+  border: 1px solid #1a1a1a;
+  padding: 0.6rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.subscribe-btn:hover {
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+/* --- RESPONSIVE --- */
+
+/* Laptops & Tablets */
+@media (max-width: 1400px) {
+  .nav-container {
+    padding: 0 1.5rem;
+  }
+  .link-group {
+    gap: 1.2rem;
+  }
+  .hide-tablet {
+    display: none;
+  }
+}
+
+/* Mobile: Clean Logo + Right Button only */
+@media (max-width: 767px) {
+  .nav-left {
+    display: none;
+  } /* Hide menu on mobile */
+  .nav-container {
+    width: 100%;
+    justify-content: center;
+  }
+  .nav-center {
+    width: 100vw;
+    justify-content: center;
+  }
+  .logo {
+    font-size: 1rem;
+  }
+  .subscribe-btn {
+    display: none;
+  }
 }
 
 /* -------------------------------------------
@@ -712,7 +779,9 @@ EDITORIAL CARD COMPONENT
   object-fit: cover;
   /* Filter: slightly desaturated to look editorial, color returns on hover */
   filter: sepia(10%) contrast(95%);
-  transition: filter 0.5s ease, transform 1s ease;
+  transition:
+    filter 0.5s ease,
+    transform 1s ease;
 }
 
 /* Hover Interaction: Image gets colorful and zooms slightly */
@@ -1084,7 +1153,9 @@ GUESTS SECTION & CAROUSEL
 
 .guest-img {
   object-fit: cover;
-  transition: transform 0.8s ease, filter 0.5s ease;
+  transition:
+    transform 0.8s ease,
+    filter 0.5s ease;
   filter: grayscale(100%);
 }
 
@@ -1698,7 +1769,9 @@ FOOTER (CARBON STYLE)
   font-weight: 600;
   color: #000;
   cursor: pointer;
-  transition: background 0.3s, color 0.3s;
+  transition:
+    background 0.3s,
+    color 0.3s;
 }
 
 .newsletter-form button:hover {

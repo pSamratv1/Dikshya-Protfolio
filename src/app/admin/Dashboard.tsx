@@ -342,6 +342,13 @@ export default function Dashboard({ initialData }: { initialData: any }) {
   // Index for additional Videos
   let actualVideoIndex: number = 1;
 
+  // 1. Get the Name
+  const firstName = user?.fullName;
+
+  // 2. Get the Role from publicMetadata
+  // We use type casting here or the global.d.ts method to avoid TS errors
+  const role = user?.publicMetadata?.role as string | undefined;
+
   return (
     <div className="min-h-screen bg-[#F2F0E9] text-[#1C1B1A] font-sans">
       {/* --- NAVBAR --- */}
@@ -351,7 +358,15 @@ export default function Dashboard({ initialData }: { initialData: any }) {
         </span>
 
         <div className="flex items-center gap-4">
-          <UserButton />
+          <div className="flex gap-4">
+            <div className="-space-y-6 ">
+              <h2 className="font-serif text-sm">{firstName}</h2>
+              <p className="font-sans text-end text-[10px] uppercase tracking-widest text-gray-400">
+                {role}
+              </p>
+            </div>
+            <UserButton />
+          </div>
           {/* HAMBURGER BUTTON (Mobile Only) */}
           <button
             onClick={() => setIsMobileMenuOpen(true)}
