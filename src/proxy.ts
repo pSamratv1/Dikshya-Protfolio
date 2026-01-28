@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 declare global {
   interface CustomJwtSessionClaims {
     publicMetadata: {
-      role?: "admin" | "customer" ;
+      role?: "admin" | "customer";
     };
   }
 }
@@ -26,7 +26,7 @@ export default clerkMiddleware(async (auth, req) => {
   const role = session.sessionClaims?.publicMetadata?.role;
 
   if (role !== "admin") {
-    return NextResponse.redirect(new URL("/", req.url)); // Or /unauthorized
+    return NextResponse.redirect(new URL("/sign-in", req.url)); // Or /unauthorized
   }
 });
 
