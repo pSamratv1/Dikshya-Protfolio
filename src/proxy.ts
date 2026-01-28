@@ -29,6 +29,9 @@ export default clerkMiddleware(async (auth, req) => {
     if (role !== "admin") {
       return NextResponse.redirect(new URL("/", req.url));
     }
+    if (role === "admin") {
+      return NextResponse.redirect(new URL("/admin", req.url));
+    }
   }
 });
 
