@@ -324,6 +324,51 @@ export async function createOrder(
   }
 }
 
+export async function getOrders(
+  page: number = 1,
+  search: string = "",
+  status: string = "ALL"
+) {
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  // Build the filter
+  const whereClause: any = {};
+
+  // Search logic (Order ID or Email)
+  if (search) {
+    whereClause.OR = [
+      { id: { contains: search, mode: "insensitive" } },
+      { customerEmail: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  // Status Filter
+  if (status !== "ALL") {
+    whereClause.status = status;
+  }
+
+  // 1. Get Data
+  const orders = await prisma.order.findMany({
+    where: whereClause,
+    include: {
+      items: {
+        include: {
+          product: true, // Include product details for the items
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    skip: skip,
+  });
+
+  // 2. Get Total Count (for pagination)
+  const totalCount = await prisma.order.count({ where: whereClause });
+
+  return { orders, totalCount, totalPages: Math.ceil(totalCount / limit) };
+}
+
 // --- MASTER FETCH (For Homepage) ---
 export async function getPortfolioData() {
   const [hero, about, podcasts, guests, gallery, testimonials, products] =

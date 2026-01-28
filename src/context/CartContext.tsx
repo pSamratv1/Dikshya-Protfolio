@@ -59,7 +59,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const clearCart = () => {
+   const clearCart = () => {
     setCart([]);
     localStorage.removeItem("dikshya_cart");
   };

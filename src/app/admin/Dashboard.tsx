@@ -23,6 +23,7 @@ import {
 import { extractYouTubeID, getYouTubeThumbnail } from "@/lib/utils";
 import ImagePicker from "@/components/ui/ImageUpload";
 import ProductImageUpload from "@/components/ui/ProductImageUpload";
+import OrdersTab from "@/components/admin/OrderTabs";
 
 // --- ICONS ---
 const MenuIcon = () => (
@@ -443,11 +444,16 @@ export default function Dashboard({ initialData }: { initialData: any }) {
               label="07 / Product"
               onClick={() => setActiveTab("products")}
             />
+            <TabButton
+              active={activeTab === "orders"}
+              label="08 / Orders"
+              onClick={() => setActiveTab("orders")}
+            />
           </div>
         </aside>
 
         {/* --- MAIN CONTENT WORKSPACE --- */}
-        <main className="flex-grow max-w-4xl pt-4 w-full">
+        <main className="flex-grow max-w-5xl pt-4 w-full">
           {/* HERO TAB */}
           {activeTab === "hero" && (
             <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -983,8 +989,8 @@ export default function Dashboard({ initialData }: { initialData: any }) {
                         index === 0
                           ? "Main Image"
                           : index === 1
-                          ? "Hover Reveal"
-                          : `Gallery Image ${index + 1}`;
+                            ? "Hover Reveal"
+                            : `Gallery Image ${index + 1}`;
 
                       return (
                         <div key={index}>
@@ -1191,6 +1197,10 @@ export default function Dashboard({ initialData }: { initialData: any }) {
               </div>
             </div>
           )}
+
+          {/* ORDERS TAB */}
+          {/* --- ORDERS TAB --- */}
+          {activeTab === "orders" && <OrdersTab />}
         </main>
       </div>
     </div>

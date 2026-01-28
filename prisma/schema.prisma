@@ -124,6 +124,7 @@ model Order {
   // User info (snapshot at time of purchase)
   userId          String?
   customerEmail   String?     // Important for Guest Checkout
+  customerPhone   String?     // Important to Connect to Client
   address         String?     // Stored as JSON string
   
   items           OrderItem[]

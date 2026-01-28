@@ -1,6 +1,5 @@
 "use client";
 
-
 const Header = () => {
   return (
     <nav className="editorial-nav">
@@ -26,7 +25,7 @@ const Header = () => {
       </div>
       <div className="nav-center">
         <a href="#" className="logo">
-          DIKSHYA LIMBU
+          NicheWithDikshya
         </a>
       </div>
       <div className="nav-group nav-right">

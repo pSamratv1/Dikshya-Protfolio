@@ -3,6 +3,7 @@ import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -96,6 +97,7 @@ export async function POST(req: Request) {
     // -------------------------------------------------------
 
     return NextResponse.json({ url: session.url }, { headers: corsHeaders });
+
   } catch (error: any) {
     console.error("[CHECKOUT_ERROR]", error);
     return new NextResponse(error.message || "Internal Server Error", {

@@ -9,7 +9,8 @@ import { useState } from "react";
 import axios from "axios"; // Make sure to npm install axios
 
 export default function CartDrawer() {
-  const { cart, isCartOpen, toggleCart, removeFromCart, cartTotal } = useCart();
+  const { cart, isCartOpen, toggleCart, removeFromCart, clearCart, cartTotal } =
+    useCart();
   const [loading, setLoading] = useState(false);
   const { isSignedIn } = useUser();
   const { openSignIn } = useClerk();
@@ -50,6 +51,7 @@ export default function CartDrawer() {
       alert(`Payment Failed: ${serverMessage}`);
     } finally {
       setLoading(false);
+      clearCart();
     }
   };
   return (
