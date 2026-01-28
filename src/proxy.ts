@@ -9,37 +9,47 @@ declare global {
   }
 }
 
-// 1. Define which routes are Admin-only
+// 1. Define Public Routes (Anyone can access)
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/shop(.*)",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api/webhooks(.*)",
+  "/api/auth/imagekit",
+]);
+
+// 2. Define Admin Routes (Only Admins)
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
-  // Check if the current request is for an admin route
-  if (isAdminRoute(req)) {
-    const session = await auth();
+  const { userId, sessionClaims } = await auth();
 
-    // ❌ If NOT logged in -> Redirect to sign-in
-    if (!session.userId) {
-      // session.redirectToSignIn() is the cleanest way to handle this in Clerk v6
-      return session.redirectToSignIn();
+  // If the user is trying to access an ADMIN route
+  if (isAdminRoute(req)) {
+    // A. If NOT logged in -> Send to Sign In
+    if (!userId) {
+      const signInUrl = new URL("/sign-in", req.url);
+      signInUrl.searchParams.set("redirect_url", req.url);
+      return NextResponse.redirect(signInUrl);
     }
 
-    // ❌ If logged in but NOT an admin -> Redirect to HOME (prevents loop)
-    // Redirecting to /sign-in while already logged in causes the blank page/loop.
-    const role = session.sessionClaims?.publicMetadata?.role;
+    // B. If logged in but NOT an admin -> Send to HOME
+    // This stops the redirect loop
+    const role = sessionClaims?.publicMetadata?.role;
     if (role !== "admin") {
       return NextResponse.redirect(new URL("/", req.url));
     }
-    if (role === "admin") {
-      return NextResponse.redirect(new URL("/admin", req.url));
-    }
   }
+
+  // For all other routes (Public or logged-in customers visiting /shop), do nothing
+  return;
 });
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
+    // Protects /admin and matches all other routes except static files
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
     "/(api|trpc)(.*)",
   ],
 };
